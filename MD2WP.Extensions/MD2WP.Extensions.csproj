@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{45A2FB3C-4A7C-4125-8F37-662322375E95}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSTS_Extensions</RootNamespace>
+    <AssemblyName>VSTS-Extensions</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="MD2WP\CLI\MD2WP.CLI.exe.config" />
+    <None Include="MD2WP\CLI\MD2WP.CLI.vshost.exe.config" />
+    <None Include="MD2WP\CLI\MD2WP.CLI.vshost.exe.manifest" />
+    <None Include="MD2WP\md2wp.ps1" />
+    <None Include="MD2WP\task.json" />
+    <None Include="overview.md" />
+    <None Include="packages.config" />
+    <None Include="vss-extension.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MD2WP\CLI\CommonMark.dll" />
+    <Content Include="MD2WP\CLI\CommonMark.pdb" />
+    <Content Include="MD2WP\CLI\CommonMark.xml" />
+    <Content Include="MD2WP\CLI\CookComputing.XmlRpcV2.dll" />
+    <Content Include="MD2WP\CLI\HtmlAgilityPack.dll" />
+    <Content Include="MD2WP\CLI\HtmlAgilityPack.pdb" />
+    <Content Include="MD2WP\CLI\HtmlAgilityPack.xml" />
+    <Content Include="MD2WP\CLI\MD2WP.CLI.exe" />
+    <Content Include="extension-icon.png" />
+    <Content Include="images\TFS_2015_light.png" />
+    <Content Include="images\TFS_2015_QU2.1_light.png" />
+    <Content Include="images\VSTS_light.png" />
+    <Content Include="MD2WP\CLI\MD2WP.CLI.pdb" />
+    <Content Include="MD2WP\CLI\MD2WP.CLI.vshost.exe" />
+    <Content Include="MD2WP\CLI\MD2WP.Shared.dll" />
+    <Content Include="MD2WP\CLI\MD2WP.Shared.pdb" />
+    <Content Include="MD2WP\CLI\Newtonsoft.Json.dll" />
+    <Content Include="MD2WP\CLI\Newtonsoft.Json.xml" />
+    <Content Include="MD2WP\CLI\WordPressSharp.dll" />
+    <Content Include="MD2WP\CLI\WordPressSharp.pdb" />
+    <Content Include="MD2WP\md2wp.js" />
+    <Content Include="MD2WP\icon.png" />
+    <Content Include="screenshots\extensions.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.DependencyValidation.Analyzers.0.9.0\analyzers\dotnet\cs\Microsoft.DependencyValidation.Analyzers.resources.dll" />
+    <Analyzer Include="..\packages\Microsoft.DependencyValidation.Analyzers.0.9.0\analyzers\dotnet\Microsoft.DependencyValidation.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

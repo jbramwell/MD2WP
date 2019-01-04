@@ -1,0 +1,75 @@
+﻿{
+    "manifestVersion": 1,
+    "id": "vsts-md2wp-extensions",
+    "name": "Markdown to WordPress",
+    "version": "0.2.20",
+    "public": true,
+    "publisher": "moonspace-labs-llc",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "description": "A build task that can be used to publish markdown files (in Git) to WordPress.",
+    "categories": [
+        "Build and release"
+    ],
+    "tags": [
+        "markdown",
+        "WordPress"
+    ],
+    "screenshots": [
+        {
+            "path": "screenshots/extensions.png"
+        }
+    ],
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
+    "icons": {
+        "default": "extension-icon.png"
+    },
+    "files": [
+        {
+            "path": "MD2WP"
+        }
+    ],
+    "scopes": [
+        "vso.build_execute"
+    ],
+    "contributions": [
+        {
+            "id": "vsts-md2wp",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "MD2WP"
+            }
+        }
+    ],
+    "links": {
+        "home": {
+            "uri": "https://blog.devmatter.com"
+        },
+        "getstarted": {
+            "uri": "http://blog.devmatter.com/vsts-tools-build-extensions/"
+        },
+        "repository": {
+            "uri": "https://github.com/jbramwell/VSTS-Tools"
+        },
+        "support": {
+            "uri": "https://github.com/jbramwell/VSTS-Tools/issues"
+        },
+        "issues": {
+            "uri": "https://github.com/jbramwell/VSTS-Tools/issues"
+        }
+    },
+    "branding": {
+        "color": "#1E88CE",
+        "theme": "dark"
+    }
+}

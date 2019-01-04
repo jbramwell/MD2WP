@@ -1,0 +1,14 @@
+﻿{
+  "AzureDevOps": {
+    "AccountUrl": "https://dev.azure.com/<<YOUR_AZURE_DEVOPS_ACCOUNT>>>",
+    "PersonalAccessToken": "<<YOUR PERSONAL ACCESS TOKEN (WITH CODE: READ, WRITE & MANAGE SCOPE)>>",
+    "RepoName": "<<YOUR REPO NAME>>",
+    "ProjectName": "<< YOUR AZURE DEVOPS PROJECT NAME>>",
+    "BranchName": "master"
+  },
+  "WordPress": {
+    "BaseUrl": "https://<<YOUR_WORDPRESS_ACCOUNT>>.wordpress.com",
+    "UserName": "<<YOUR WORDPRESS USER NAME>>",
+    "Password": "<<YOUR WORDPRESS PASSWORD>>"
+  }
+}

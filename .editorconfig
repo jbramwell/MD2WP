@@ -1,0 +1,6 @@
+# top-most EditorConfig file
+root = true
+
+# CSharp and VisualBasic code style settings:
+[*.cs,*.vb]
+dotnet_style_qualification_for_field = true:suggestion

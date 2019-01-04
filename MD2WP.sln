@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MD2WP.CLI", "MD2WP.CLI\MD2WP.CLI.csproj", "{0A1A67D6-A10D-4DBD-93D4-F677BEF94607}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MD2WP.Extensions", "MD2WP.Extensions\MD2WP.Extensions.csproj", "{45A2FB3C-4A7C-4125-8F37-662322375E95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MD2WP.TestUI", "MD2WP.TestUI\MD2WP.TestUI.csproj", "{8A694815-B071-4146-94E2-F9162AADEE3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MD2WP.Shared", "MD2WP.Shared\MD2WP.Shared.csproj", "{3267821D-06A6-40EA-9BD2-152A012377B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{2429315C-D099-4D17-A2D8-798258A8613E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FBEF0C5C-275F-42C1-97BB-B987DCDC11A3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A1A67D6-A10D-4DBD-93D4-F677BEF94607}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1A67D6-A10D-4DBD-93D4-F677BEF94607}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1A67D6-A10D-4DBD-93D4-F677BEF94607}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1A67D6-A10D-4DBD-93D4-F677BEF94607}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A2FB3C-4A7C-4125-8F37-662322375E95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A2FB3C-4A7C-4125-8F37-662322375E95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A2FB3C-4A7C-4125-8F37-662322375E95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A2FB3C-4A7C-4125-8F37-662322375E95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A694815-B071-4146-94E2-F9162AADEE3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A694815-B071-4146-94E2-F9162AADEE3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A694815-B071-4146-94E2-F9162AADEE3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A694815-B071-4146-94E2-F9162AADEE3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3267821D-06A6-40EA-9BD2-152A012377B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3267821D-06A6-40EA-9BD2-152A012377B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3267821D-06A6-40EA-9BD2-152A012377B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3267821D-06A6-40EA-9BD2-152A012377B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2429315C-D099-4D17-A2D8-798258A8613E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2429315C-D099-4D17-A2D8-798258A8613E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2429315C-D099-4D17-A2D8-798258A8613E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2429315C-D099-4D17-A2D8-798258A8613E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9B560290-C4F1-4E22-80BF-85DCAC85F5C7}
+	EndGlobalSection
+EndGlobal
