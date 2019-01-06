@@ -1,6 +1,6 @@
 ﻿using System;
+using MD2WP.Shared.BusinessLogic;
 using MD2WP.Shared.Helpers;
-using MoonspaceLabs.Shared.BusinessLogic;
 
 namespace MoonspaceLabs.Shared.CLI
 {
@@ -52,7 +52,7 @@ namespace MoonspaceLabs.Shared.CLI
 
                 try
                 {
-                    var client = new MD2WPClient(
+                    var client = new Md2WpClient(
                         GetArgument(args, 1),
                         GetArgument(args, 2),
                         GetArgument(args, 3),

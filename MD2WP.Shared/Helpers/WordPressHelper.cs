@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MD2WP.Shared.BusinessLogic;
+using System;
 using System.Collections.Generic;
-using MD2WP.Shared.BusinessLogic;
 using WordPressSharp;
 using WordPressSharp.Models;
 
@@ -8,31 +8,13 @@ namespace MD2WP.Shared.Helpers
 {
     public class WordPressHelper
     {
-        private WordPressSiteConfig _siteConfig;
-        private WordPressClient _client;
+        private WordPressClient client;
 
         #region Properties
 
-        private WordPressSiteConfig SiteConfig
-        {
-            get
-            {
-                return _siteConfig;
-            }
-        }
+        private WordPressSiteConfig SiteConfig { get; }
 
-        private WordPressClient Client
-        {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new WordPressClient(SiteConfig);
-                }
-
-                return _client;
-            }
-        }
+        private WordPressClient Client => client ?? (client = new WordPressClient(SiteConfig));
 
         #endregion
 
@@ -40,7 +22,7 @@ namespace MD2WP.Shared.Helpers
 
         public WordPressHelper(string baseUrl, string userName, string password)
         {
-            _siteConfig = new WordPressSiteConfig()
+            SiteConfig = new WordPressSiteConfig()
             {
                 BaseUrl = baseUrl,
                 Username = userName,
@@ -113,6 +95,8 @@ namespace MD2WP.Shared.Helpers
         /// Returns the <see cref="Term"/> associated with the name passed in.
         /// </summary>
         /// <param name="name">The name of the term to return.</param>
+        /// <param name="taxonomy"></param>
+        /// <param name="createMissingTerm"></param>
         /// <returns>Returns the <see cref="Term"/> associated with the name passed in. If the
         /// term does not exist, it will be created.</returns>
         public Term GetTerm(string name, string taxonomy, bool createMissingTerm)
@@ -141,10 +125,10 @@ namespace MD2WP.Shared.Helpers
                 {
                     Name = name,
                     Slug = name,
-                    Taxonomy = taxonomy
+                    Taxonomy = taxonomy,
+                    Id = CreateTerm(name, taxonomy)
                 };
 
-                term.Id = CreateTerm(name, taxonomy);
             }
 
             return term;
@@ -154,6 +138,7 @@ namespace MD2WP.Shared.Helpers
         /// Creates a new <see cref="Term"/> associated with the name passed in.
         /// </summary>
         /// <param name="name">The name of the term to create.</param>
+        /// <param name="taxonomy"></param>
         /// <returns>The ID of the new term.</returns>
         public string CreateTerm(string name, string taxonomy)
         {
@@ -171,7 +156,8 @@ namespace MD2WP.Shared.Helpers
         /// <summary>
         /// Deletes the term associated with the ID passed in.
         /// </summary>
-        /// <param name="name">The ID of the term to delete.</param>
+        /// <param name="id">The ID of the term to delete.</param>
+        /// <param name="taxonomy"></param>
         public bool DeleteTerm(int id, string taxonomy)
         {
             return Client.DeleteTerm(id, taxonomy);
@@ -180,7 +166,7 @@ namespace MD2WP.Shared.Helpers
         public PostStatus CreatePost(string title, string body, int postId, string documentType, List<string> categories,
             List<string> tags, bool isDraft, bool publishNewPostAsDraft, string authorName, string authorEmail, bool publishAsCommitter)
         {
-            Logger.LogMessage($"Creating post in WordPress");
+            Logger.LogMessage("Creating post in WordPress");
 
             var postStatus = new PostStatus();
             var postIsNew = false;
@@ -199,7 +185,7 @@ namespace MD2WP.Shared.Helpers
                 {
                     if (ex.Message.Contains("[401]"))
                     {
-                        Logger.LogError($"The WordPress account configured in the build parameters must be in the Administrator role.");
+                        Logger.LogError("The WordPress account configured in the build parameters must be in the Administrator role.");
                         throw;
                     }
                     else if (!ex.Message.Contains("Invalid post ID"))

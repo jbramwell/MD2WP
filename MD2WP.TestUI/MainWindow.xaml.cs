@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using MoonspaceLabs.Shared.BusinessLogic;
+using MD2WP.Shared.BusinessLogic;
 
 namespace MD2WP.TestUI
 {
@@ -11,7 +11,7 @@ namespace MD2WP.TestUI
     {
         #region Private Attributes
 
-        MD2WPClient _client;
+        Md2WpClient _client;
         Settings _settings;
 
         #endregion
@@ -38,7 +38,7 @@ namespace MD2WP.TestUI
         {
             this.Cursor = Cursors.Wait;
 
-            _client = new MD2WPClient(
+            _client = new Md2WpClient(
                 SiteUrlTextBox.Text,
                 UserNameTextBox.Text,
                 PasswordTextBox.Password,

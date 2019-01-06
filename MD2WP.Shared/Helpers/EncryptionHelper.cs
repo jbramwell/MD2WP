@@ -8,7 +8,7 @@ namespace MD2WP.Shared.Helpers
     // This code courtesy of StackOverflow: http://stackoverflow.com/questions/202011/encrypt-and-decrypt-a-string
     public class EncryptionHelper
     {
-        private static byte[] _salt = Encoding.ASCII.GetBytes("ox89c3lmav0ak43lam09664KNnmOELKASIkd5");
+        private static readonly byte[] Salt = Encoding.ASCII.GetBytes("ox89c3lmav0ak43lam09664KNnmOELKASIkd5");
 
         /// <summary>
         /// Encrypt the given string using AES.  The string can be decrypted using 
@@ -16,20 +16,20 @@ namespace MD2WP.Shared.Helpers
         /// </summary>
         /// <param name="plainText">The text to encrypt.</param>
         /// <param name="sharedSecret">A password used to generate a key for encryption.</param>
-        public static string EncryptStringAES(string plainText, string sharedSecret)
+        public static string EncryptStringAes(string plainText, string sharedSecret)
         {
             if (string.IsNullOrEmpty(plainText))
-                throw new ArgumentNullException("plainText");
+                throw new ArgumentNullException(nameof(plainText));
             if (string.IsNullOrEmpty(sharedSecret))
-                throw new ArgumentNullException("sharedSecret");
+                throw new ArgumentNullException(nameof(sharedSecret));
 
-            string outStr = null;                       // Encrypted string to return
-            RijndaelManaged aesAlg = null;              // RijndaelManaged object used to encrypt the data.
+            string outStr;                       // Encrypted string to return
+            RijndaelManaged aesAlg = null;       // RijndaelManaged object used to encrypt the data.
 
             try
             {
                 // generate the key from the shared secret and the salt
-                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(sharedSecret, _salt);
+                var key = new Rfc2898DeriveBytes(sharedSecret, Salt);
 
                 // Create a RijndaelManaged object
                 //aesAlg = new RijndaelManaged()
@@ -40,19 +40,20 @@ namespace MD2WP.Shared.Helpers
                 aesAlg.Key = key.GetBytes(aesAlg.KeySize / 8);
 
                 // Create a decryptor to perform the stream transform.
-                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
+                using (var msEncrypt = new MemoryStream())
                 {
                     // prepend the IV
                     msEncrypt.Write(BitConverter.GetBytes(aesAlg.IV.Length), 0, sizeof(int));
                     msEncrypt.Write(aesAlg.IV, 0, aesAlg.IV.Length);
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+
+                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        using (var swEncrypt = new StreamWriter(csEncrypt))
                         {
-                            //Write all data to the stream.
+                            // Write all data to the stream.
                             swEncrypt.Write(plainText);
                         }
                     }
@@ -62,8 +63,7 @@ namespace MD2WP.Shared.Helpers
             finally
             {
                 // Clear the RijndaelManaged object.
-                if (aesAlg != null)
-                    aesAlg.Clear();
+                aesAlg?.Clear();
             }
 
             // Return the encrypted bytes from the memory stream.
@@ -76,12 +76,12 @@ namespace MD2WP.Shared.Helpers
         /// </summary>
         /// <param name="cipherText">The text to decrypt.</param>
         /// <param name="sharedSecret">A password used to generate a key for decryption.</param>
-        public static string DecryptStringAES(string cipherText, string sharedSecret)
+        public static string DecryptStringAes(string cipherText, string sharedSecret)
         {
             if (string.IsNullOrEmpty(cipherText))
-                throw new ArgumentNullException("cipherText");
+                throw new ArgumentNullException(nameof(cipherText));
             if (string.IsNullOrEmpty(sharedSecret))
-                throw new ArgumentNullException("sharedSecret");
+                throw new ArgumentNullException(nameof(sharedSecret));
 
             // Declare the RijndaelManaged object
             // used to decrypt the data.
@@ -89,16 +89,17 @@ namespace MD2WP.Shared.Helpers
 
             // Declare the string used to hold
             // the decrypted text.
-            string plaintext = null;
+            string plaintext;
 
             try
             {
                 // generate the key from the shared secret and the salt
-                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(sharedSecret, _salt);
+                var key = new Rfc2898DeriveBytes(sharedSecret, Salt);
 
                 // Create the streams used for decryption.                
-                byte[] bytes = Convert.FromBase64String(cipherText);
-                using (MemoryStream msDecrypt = new MemoryStream(bytes))
+                var bytes = Convert.FromBase64String(cipherText);
+
+                using (var msDecrypt = new MemoryStream(bytes))
                 {
                     // Create a RijndaelManaged object with the specified key and IV.
                     aesAlg = new RijndaelManaged();
@@ -109,10 +110,11 @@ namespace MD2WP.Shared.Helpers
                     aesAlg.IV = ReadByteArray(msDecrypt);
 
                     // Create a decrytor to perform the stream transform.
-                    ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        using (var srDecrypt = new StreamReader(csDecrypt))
 
                             // Read the decrypted bytes from the decrypting stream
                             // and place them in a string.
@@ -123,8 +125,7 @@ namespace MD2WP.Shared.Helpers
             finally
             {
                 // Clear the RijndaelManaged object.
-                if (aesAlg != null)
-                    aesAlg.Clear();
+                aesAlg?.Clear();
             }
 
             return plaintext;
@@ -132,13 +133,15 @@ namespace MD2WP.Shared.Helpers
 
         private static byte[] ReadByteArray(Stream s)
         {
-            byte[] rawLength = new byte[sizeof(int)];
+            var rawLength = new byte[sizeof(int)];
+
             if (s.Read(rawLength, 0, rawLength.Length) != rawLength.Length)
             {
                 throw new SystemException("Stream did not contain properly formatted byte array");
             }
 
-            byte[] buffer = new byte[BitConverter.ToInt32(rawLength, 0)];
+            var buffer = new byte[BitConverter.ToInt32(rawLength, 0)];
+
             if (s.Read(buffer, 0, buffer.Length) != buffer.Length)
             {
                 throw new SystemException("Did not read byte array properly");

@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using MoonspaceLabs.Shared.BaseClasses;
+using MoonspaceLabs.Shared.Entities;
+using MoonspaceLabs.Shared.Helpers;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
-using MD2WP.Shared.Helpers;
-using MoonspaceLabs.Shared.BaseClasses;
-using MoonspaceLabs.Shared.Entities;
 
-namespace MoonspaceLabs.Shared.Helpers
+namespace MD2WP.Shared.Helpers
 {
     public class VstsHelper
     {
@@ -17,17 +17,15 @@ namespace MoonspaceLabs.Shared.Helpers
         /// <param name="authentication">The user's authentication credentials.</param>
         /// <param name="project">The VSTS (team) Project.</param>
         /// <param name="repo">The name of the Git Repo containing the file.</param>
+        /// <param name="branch"></param>
         /// <param name="fileToDownload">The Path to the file (within the Repo) to be downloaded.</param>
-        /// <param name="destination">The Destination Path where the file should be downloaded to.</param>
-        /// <param name="baseIndent">Base indent level for verbose output.</param>
-        /// <param name="verbose">When <c>true</c> a list of downloaded files is displayed.</param>
         /// <returns><c>true</c> if the file is downloaded successfully; otherwise, <c>false</c>.</returns>
         public byte[] DownloadBinaryFile(BasicAuthentication authentication, string project, string repo, string branch, string fileToDownload)
         {
             var restHttpClient = new RestHttpClient();
             var url = $"{authentication.AccountUrl}/{project}/_apis/git/repositories/{repo}/items?api-version=1.0&versionType=branch&version={branch}&scopePath={fileToDownload}";
+            var buffer = new byte[0x4000];
             byte[] data = null;
-            byte[] buffer = new byte[0x4000];
 
             using (var response = restHttpClient.RequestFile(authentication, url))
             {
@@ -40,7 +38,7 @@ namespace MoonspaceLabs.Shared.Helpers
                         {
                             int read;
 
-                            while ((read = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                            while (responseStream != null && (read = responseStream.Read(buffer, 0, buffer.Length)) > 0)
                             {
                                 ms.Write(buffer, 0, read);
                             }
@@ -60,6 +58,7 @@ namespace MoonspaceLabs.Shared.Helpers
         /// <param name="authentication">The user's authentication credentials.</param>
         /// <param name="project">The VSTS (team) Project.</param>
         /// <param name="repo">The name of the Git Repo containing the file.</param>
+        /// <param name="branch"></param>
         /// <param name="fileToDownload">The Path to the file (within the Repo) to be downloaded.</param>
         public string GetFileContents(BasicAuthentication authentication, string project, string repo, string branch, string fileToDownload)
         {
@@ -96,7 +95,7 @@ namespace MoonspaceLabs.Shared.Helpers
 
             using (var response = restHttpClient.GetAsync<CollectionResult<Ref>>(authentication, url))
             {
-                if (response != null && response.Result.Value.Count > 0)
+                if (response.Result.Value.Count > 0)
                 {
                     foreach (var branchItem in response.Result.Value)
                     {
@@ -115,26 +114,28 @@ namespace MoonspaceLabs.Shared.Helpers
         public async void SaveTextFile(BasicAuthentication authentication, string project, string repo, string branch, string filename, string contents, string commitComment, bool isNewFile)
         {
             var client = new RestHttpClient();
-            var fileContents = string.Empty;
-            var restHttpClient = new RestHttpClient();
             var url = $"{authentication.AccountUrl}/{project}/_apis/git/repositories/{repo}/pushes?api-version=2.0-preview&versionType=branch&version={branch}&scopePath={filename}";
             var filePush = new Push();
-            var filePushRefUpdates = new RefUpdate();
+            var filePushRefUpdates = new RefUpdate
+            {
+                name = $"refs/heads/{branch}",
+                oldObjectId = GetBranchObjectId(authentication, project, repo, branch)
+            };
 
-            filePushRefUpdates.name = $"refs/heads/{branch}";
-            filePushRefUpdates.oldObjectId = GetBranchObjectId(authentication, project, repo, branch);
 
             filePush.refUpdates.Add(filePushRefUpdates);
 
             var commit = new Commit();
-            var change = new Change();
-
-            change.changeType = isNewFile ? "add" : "edit";
-            change.item.path = filename;
-
-            change.newContent = new NewContent();
-            change.newContent.content = contents;
-            change.newContent.contentType = "rawtext";
+            var change = new Change
+            {
+                changeType = isNewFile ? "add" : "edit",
+                item = { path = filename },
+                newContent = new NewContent
+                {
+                    content = contents,
+                    contentType = "rawtext"
+                }
+            };
 
             commit.changes.Add(change);
 
@@ -142,29 +143,29 @@ namespace MoonspaceLabs.Shared.Helpers
 
             filePush.commits.Add(commit);
 
-            var results = await client.PostAsync<object>(authentication, url, filePush);
+            await client.PostAsync<object>(authentication, url, filePush);
         }
 
         public async void RenameFile(BasicAuthentication authentication, string project, string repo, string branch, string oldFilename, string newFilename, string commitComment)
         {
             var client = new RestHttpClient();
-            var fileContents = string.Empty;
-            var restHttpClient = new RestHttpClient();
             var url = $"{authentication.AccountUrl}/{project}/_apis/git/repositories/{repo}/pushes?api-version=2.0-preview&versionType=branch&version={branch}";
             var filePush = new Push();
-            var filePushRefUpdates = new RefUpdate();
-
-            filePushRefUpdates.name = $"refs/heads/{branch}";
-            filePushRefUpdates.oldObjectId = GetBranchObjectId(authentication, project, repo, branch);
+            var filePushRefUpdates = new RefUpdate
+            {
+                name = $"refs/heads/{branch}",
+                oldObjectId = GetBranchObjectId(authentication, project, repo, branch)
+            };
 
             filePush.refUpdates.Add(filePushRefUpdates);
 
             var commit = new Commit();
-            var change = new Change();
-
-            change.changeType = "rename";
-            change.sourceServerItem = oldFilename;
-            change.item.path = newFilename;
+            var change = new Change
+            {
+                changeType = "rename",
+                sourceServerItem = oldFilename,
+                item = { path = newFilename }
+            };
 
             commit.changes.Add(change);
 
@@ -172,28 +173,28 @@ namespace MoonspaceLabs.Shared.Helpers
 
             filePush.commits.Add(commit);
 
-            var results = await client.PostAsync<object>(authentication, url, filePush);
+            await client.PostAsync<object>(authentication, url, filePush);
         }
 
         public async void DeleteFile(BasicAuthentication authentication, string project, string repo, string branch, string filename, string commitComment)
         {
             var client = new RestHttpClient();
-            var fileContents = string.Empty;
-            var restHttpClient = new RestHttpClient();
             var url = $"{authentication.AccountUrl}/{project}/_apis/git/repositories/{repo}/pushes?api-version=2.0-preview&versionType=branch&version={branch}";
             var filePush = new Push();
-            var filePushRefUpdates = new RefUpdate();
-
-            filePushRefUpdates.name = $"refs/heads/{branch}";
-            filePushRefUpdates.oldObjectId = GetBranchObjectId(authentication, project, repo, branch);
+            var filePushRefUpdates = new RefUpdate
+            {
+                name = $"refs/heads/{branch}",
+                oldObjectId = GetBranchObjectId(authentication, project, repo, branch)
+            };
 
             filePush.refUpdates.Add(filePushRefUpdates);
 
             var commit = new Commit();
-            var change = new Change();
-
-            change.changeType = "delete";
-            change.item.path = filename;
+            var change = new Change
+            {
+                changeType = "delete",
+                item = { path = filename }
+            };
 
             commit.changes.Add(change);
 
@@ -201,7 +202,7 @@ namespace MoonspaceLabs.Shared.Helpers
 
             filePush.commits.Add(commit);
 
-            var results = await client.PostAsync<object>(authentication, url, filePush);
+            await client.PostAsync<object>(authentication, url, filePush);
         }
 
         /// <summary>
@@ -244,12 +245,11 @@ namespace MoonspaceLabs.Shared.Helpers
         {
             var restHttpClient = new RestHttpClient();
             var url = $"{authentication.AccountUrl}/{project}/_apis/git/repositories/{repo}/items?api-version=1.0&recursionLevel={(fullRecursion ? "Full" : "1")}&versionType=branch&version={branch}&scopePath={rootPath}";
-            var objectId = string.Empty;
             var itemList = new List<ItemDescriptor>();
 
             using (var response = restHttpClient.GetAsync<CollectionResult<ItemDescriptor>>(authentication, url))
             {
-                if (response != null && response.Result.Value.Count > 0)
+                if (response.Result.Value.Count > 0)
                 {
                     foreach (var itemDescriptor in response.Result.Value)
                     {
@@ -262,7 +262,6 @@ namespace MoonspaceLabs.Shared.Helpers
             }
 
             return itemList;
-
         }
 
         public CommitTree GetCommitInfo(BasicAuthentication authentication, string project, string repo, string branch, string commitId)
@@ -271,14 +270,11 @@ namespace MoonspaceLabs.Shared.Helpers
 
             var restHttpClient = new RestHttpClient();
             var url = $"{authentication.AccountUrl}/{project}/_apis/git/repositories/{repo}/commits/{commitId}?api-version=1.0&versionType=branch&version={branch}";
-            CommitTree results = null;
+            CommitTree results;
 
             using (var response = restHttpClient.GetAsync<CommitTree>(authentication, url))
             {
-                if (response != null)
-                {
-                    results = response.Result;
-                }
+                results = response.Result;
             }
 
             return results;

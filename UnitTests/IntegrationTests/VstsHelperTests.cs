@@ -3,6 +3,7 @@ using MoonspaceLabs.Shared.BaseClasses;
 using MoonspaceLabs.Shared.Helpers;
 using System;
 using System.Linq;
+using MD2WP.Shared.Helpers;
 using UnitTests.IntegrationTests;
 
 namespace UnitTests

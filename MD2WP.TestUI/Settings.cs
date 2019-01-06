@@ -51,7 +51,7 @@ namespace MD2WP.TestUI
                     else
                     {
                         // We have a passkey
-                        json = EncryptionHelper.DecryptStringAES(json, passKey);
+                        json = EncryptionHelper.DecryptStringAes(json, passKey);
                     }
                 }
 
@@ -75,7 +75,7 @@ namespace MD2WP.TestUI
             // If a pass key is provided, let's encrypt!
             if (!string.IsNullOrEmpty(passKey))
             {
-                json = EncryptionHelper.EncryptStringAES(json, passKey);
+                json = EncryptionHelper.EncryptStringAes(json, passKey);
             }
 
             File.WriteAllText(SettingsFilename, json);

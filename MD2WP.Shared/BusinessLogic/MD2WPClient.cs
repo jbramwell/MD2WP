@@ -1,78 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Markdig;
 using MD2WP.Shared.Helpers;
 using MoonspaceLabs.Shared.BaseClasses;
 using MoonspaceLabs.Shared.Entities;
-using MoonspaceLabs.Shared.Helpers;
 using Newtonsoft.Json;
-using WordPressSharp;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 
-namespace MoonspaceLabs.Shared.BusinessLogic
+namespace MD2WP.Shared.BusinessLogic
 {
-    public class MD2WPClient
+    public class Md2WpClient
     {
         #region Private Attributes
 
-        private BasicAuthentication _vstsAuthentication;
-        private VstsHelper _vstsHelper;
-        private WordPressHelper _wpHelper;
-        private List<ItemDescriptor> _markdownFileList;
-        private WordPressSiteConfig _siteConfig;
-        private WordPressClient _client;
-        private List<DocumentMetadata> _metadata;
-        private bool _metadataFileCreated;
-        private string _accountUrl;
-        private string _project;
-        private string _repoName;
-        private string _branch;
-        private string _accessToken;
-        private string _metadataFilename;
-        private bool _embedExternalImages;
-        private bool _publishAsCommitter;
-        private bool _processSubfolders;
-        private bool _useFolderNameAsCategory;
-        private bool _useFolderNameAsTag;
-        private bool _publishNewPostsAsDraft;
-        private bool _trackPostIdInFilename;
-        private bool _addEditLink;
-        private string _editLinkText;
-        private string _editLinkStyle;
-
-        #endregion
-
-        #region Properties
-
-        private WordPressSiteConfig SiteConfig
-        {
-            get
-            {
-                return _siteConfig;
-            }
-        }
-
-        private WordPressClient Client
-        {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new WordPressClient(SiteConfig);
-                }
-
-                return _client;
-            }
-        }
+        private readonly BasicAuthentication vstsAuthentication;
+        private readonly VstsHelper vstsHelper;
+        private readonly WordPressHelper wpHelper;
+        private List<ItemDescriptor> markdownFileList;
+        //private readonly WordPressSiteConfig siteConfig;
+        private List<DocumentMetadata> metadata;
+        private bool metadataFileCreated;
+        //private string accountUrl;
+        private readonly string project;
+        private readonly string repoName;
+        private readonly string branch;
+        //private readonly string accessToken;
+        private readonly string metadataFilename;
+        private readonly bool embedExternalImages;
+        private readonly bool publishAsCommitter;
+        private readonly bool processSubfolders;
+        private readonly bool useFolderNameAsCategory;
+        private readonly bool useFolderNameAsTag;
+        private readonly bool publishNewPostsAsDraft;
+        private readonly bool trackPostIdInFilename;
+        private readonly bool addEditLink;
+        private readonly string editLinkText;
+        private readonly string editLinkStyle;
 
         #endregion
 
         #region Constructor(s)
 
-        public MD2WPClient(string baseUrl, string userName, string password, string accountUrl,
+        public Md2WpClient(string baseUrl, string userName, string password, string accountUrl,
             string project, string repoName, string branch, string accessToken, string metadataFilename,
             bool embedExternalImages, bool publishAsCommitter, bool processSubfolders, bool useFolderNameAsCategory,
             bool useFolderNameAsTag, bool publishNewPostsAsDraft, bool trackPostIdInFilename,
@@ -81,12 +53,12 @@ namespace MoonspaceLabs.Shared.BusinessLogic
             Logger.LogMessage("MDWWPClient::ctor");
             Logger.LogMessage($"  BaseUrl = {baseUrl}");
             Logger.LogMessage($"  UserName = {userName}");
-            Logger.LogMessage($"  Password = ********");
+            Logger.LogMessage("  Password = ********");
             Logger.LogMessage($"  Account URL = {accountUrl}");
             Logger.LogMessage($"  Project = {project}");
             Logger.LogMessage($"  RepoName = {repoName}");
             Logger.LogMessage($"  Branch = {branch}");
-            Logger.LogMessage($"  AccessToken = ********");
+            Logger.LogMessage("  AccessToken = ********");
             Logger.LogMessage($"  MetadataFilename = {metadataFilename}");
             Logger.LogMessage($"  EmbedExternalImages = {embedExternalImages}");
             Logger.LogMessage($"  PublishAsCommitter = {publishAsCommitter}");
@@ -99,40 +71,40 @@ namespace MoonspaceLabs.Shared.BusinessLogic
             Logger.LogMessage($"  EditLinkText = {editLinkText}");
             Logger.LogMessage($"  editLinkStyle = {editLinkStyle}");
 
-            _vstsAuthentication = new BasicAuthentication(accountUrl, string.Empty, accessToken);
-            _vstsHelper = new VstsHelper();
-            _wpHelper = new WordPressHelper(baseUrl, userName, password);
+            vstsAuthentication = new BasicAuthentication(accountUrl, string.Empty, accessToken);
+            vstsHelper = new VstsHelper();
+            wpHelper = new WordPressHelper(baseUrl, userName, password);
 
-            _siteConfig = new WordPressSiteConfig()
-            {
-                BaseUrl = baseUrl,
-                Username = userName,
-                Password = password
-            };
+            //siteConfig = new WordPressSiteConfig()
+            //{
+            //    BaseUrl = baseUrl,
+            //    Username = userName,
+            //    Password = password
+            //};
 
-            _accountUrl = accountUrl;
-            _project = project;
-            _repoName = repoName;
-            _branch = branch;
-            _accessToken = accessToken;
-            _metadataFilename = metadataFilename.TrimStart('\\');
-            _embedExternalImages = embedExternalImages;
-            _publishAsCommitter = publishAsCommitter;
-            _processSubfolders = processSubfolders;
-            _useFolderNameAsCategory = useFolderNameAsCategory;
-            _useFolderNameAsTag = useFolderNameAsTag;
-            _publishNewPostsAsDraft = publishNewPostsAsDraft;
-            _trackPostIdInFilename = trackPostIdInFilename;
-            _addEditLink = addEditLink;
-            _editLinkText = editLinkText;
-            _editLinkStyle = editLinkStyle;
+            //this.accountUrl = accountUrl;
+            this.project = project;
+            this.repoName = repoName;
+            this.branch = branch;
+            //this.accessToken = accessToken;
+            this.metadataFilename = metadataFilename.TrimStart('\\');
+            this.embedExternalImages = embedExternalImages;
+            this.publishAsCommitter = publishAsCommitter;
+            this.processSubfolders = processSubfolders;
+            this.useFolderNameAsCategory = useFolderNameAsCategory;
+            this.useFolderNameAsTag = useFolderNameAsTag;
+            this.publishNewPostsAsDraft = publishNewPostsAsDraft;
+            this.trackPostIdInFilename = trackPostIdInFilename;
+            this.addEditLink = addEditLink;
+            this.editLinkText = editLinkText;
+            this.editLinkStyle = editLinkStyle;
         }
 
         #endregion
 
         #region HTML Methods
 
-        private byte[] GetImageFromUrl(string url)
+        private static byte[] GetImageFromUrl(string url)
         {
             byte[] imageBytes;
 
@@ -146,7 +118,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
 
         public string ConvertMarkdownToHtml(string markdown)
         {
-            Logger.LogMessage($"Converting markdown to HTML");
+            Logger.LogMessage("Converting markdown to HTML");
 
             // Configure the pipeline with various extensions active as defined here: https://github.com/lunet-io/markdig
             var pipeline = new MarkdownPipelineBuilder().
@@ -165,53 +137,57 @@ namespace MoonspaceLabs.Shared.BusinessLogic
 
         private string ConvertHtmlToEmbeddedImages(string fileContents)
         {
-            Logger.LogMessage($"Converting image links to embedded image data (where applicable)");
+            Logger.LogMessage("Converting image links to embedded image data (where applicable)");
 
-            var htmlDocument = new HtmlAgilityPack.HtmlDocument();
+            var htmlDocument = new HtmlDocument();
 
             htmlDocument.LoadHtml(fileContents);
 
             var htmlNavigator = htmlDocument.CreateNavigator();
-            var imageLinks = htmlNavigator.Select(".//img");
 
-            foreach (HtmlNodeNavigator image in imageLinks)
+            if (htmlNavigator != null)
             {
-                var imageSource = image.CurrentNode.Attributes["src"];
-                var imageUrl = imageSource.Value;
-                var isExternal = false;
-                var imageExtension = string.Empty;
+                var imageLinks = htmlNavigator.Select(".//img");
 
-                // Start by looking for non-relative paths. Relative paths are assumed to be "internal" URLs
-                if (imageUrl.StartsWith("http:", StringComparison.InvariantCultureIgnoreCase))
+                foreach (HtmlNodeNavigator image in imageLinks)
                 {
-                    var imageUri = new Uri(imageUrl);
+                    var imageSource = image.CurrentNode.Attributes["src"];
+                    var imageUrl = imageSource.Value;
+                    bool isExternal;
+                    string imageExtension;
 
-                    isExternal = !imageUri.Host.EndsWith(".visualstudio.com", StringComparison.InvariantCultureIgnoreCase);
-                    imageExtension = Path.GetExtension(imageUri.AbsolutePath).TrimStart('.');
-                }
-                else
-                {
-                    isExternal = false;
-                    imageExtension = Path.GetExtension(imageUrl).TrimStart('.');
-                }
-
-                if (isExternal)
-                {
-                    // We might not want to embed external images, e.g. for CDN/bandwidth reasons
-                    if (_embedExternalImages)
+                    // Start by looking for non-relative paths. Relative paths are assumed to be "internal" URLs
+                    if (imageUrl.StartsWith("http:", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var imageBase64 = Convert.ToBase64String(GetImageFromUrl(imageUrl));
+                        var imageUri = new Uri(imageUrl);
+
+                        isExternal = !imageUri.Host.EndsWith(".visualstudio.com", StringComparison.InvariantCultureIgnoreCase);
+                        imageExtension = Path.GetExtension(imageUri.AbsolutePath).TrimStart('.');
+                    }
+                    else
+                    {
+                        isExternal = false;
+                        imageExtension = Path.GetExtension(imageUrl).TrimStart('.');
+                    }
+
+                    if (isExternal)
+                    {
+                        // We might not want to embed external images, e.g. for CDN/bandwidth reasons
+                        if (embedExternalImages)
+                        {
+                            var imageBase64 = Convert.ToBase64String(GetImageFromUrl(imageUrl));
+
+                            imageSource.Value = $"data:image/{imageExtension};base64,{imageBase64}";
+                        }
+                    }
+                    else
+                    {
+                        // Download image from VSTS via REST API
+                        var imageBase64 = Convert.ToBase64String(
+                            vstsHelper.DownloadBinaryFile(vstsAuthentication, project, repoName, branch, imageUrl.TrimStart('.')));
 
                         imageSource.Value = $"data:image/{imageExtension};base64,{imageBase64}";
                     }
-                }
-                else
-                {
-                    // Download image from VSTS via REST API
-                    var imageBase64 = Convert.ToBase64String(
-                        _vstsHelper.DownloadBinaryFile(_vstsAuthentication, _project, _repoName, _branch, imageUrl.TrimStart('.')));
-
-                    imageSource.Value = $"data:image/{imageExtension};base64,{imageBase64}";
                 }
             }
 
@@ -231,33 +207,28 @@ namespace MoonspaceLabs.Shared.BusinessLogic
         {
             Logger.LogMessage("Loading metadata file...");
 
-            var text = _vstsHelper.GetFileContents(_vstsAuthentication, _project, _repoName, _branch, _metadataFilename);
+            var text = vstsHelper.GetFileContents(vstsAuthentication, project, repoName, branch, metadataFilename);
 
             if (text.Contains("GitItemNotFoundException"))
             {
                 Logger.LogMessage("Metadata file does not exist so creating it");
 
-                _metadata = new List<DocumentMetadata>();
+                metadata = new List<DocumentMetadata>();
 
                 // Track this as being created so we can perform an "add" instead of the usual "edit"
-                _metadataFileCreated = true;
+                metadataFileCreated = true;
             }
             else
             {
-                _metadata = JsonConvert.DeserializeObject<List<DocumentMetadata>>(text);
-
-                if (_metadata == null)
-                {
-                    _metadata = new List<DocumentMetadata>();
-                }
+                metadata = JsonConvert.DeserializeObject<List<DocumentMetadata>>(text) ?? new List<DocumentMetadata>();
             }
         }
 
         private void ClearMetadataReconcileFlag()
         {
-            if (_metadata != null)
+            if (metadata != null)
             {
-                foreach (var item in _metadata)
+                foreach (var item in metadata)
                 {
                     item.IsReconciled = false;
                 }
@@ -268,7 +239,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
         {
             Logger.LogMessage("Removing 'orphaned' entries from metadata file.");
 
-            _metadata.RemoveAll(x => !x.IsReconciled);
+            metadata.RemoveAll(x => !x.IsReconciled);
         }
 
         private DocumentMetadata GetDocumentMetadata(string filename)
@@ -285,7 +256,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                 id = int.Parse(filenameHelper.GetId(filename));
             }
 
-            foreach (var metadataEntry in _metadata)
+            foreach (var metadataEntry in metadata)
             {
                 if ((hasId && id == metadataEntry.DocumentId) ||
                     (metadataEntry.DocumentFilename.Equals(filename, StringComparison.InvariantCultureIgnoreCase)))
@@ -304,7 +275,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
 
             var commitId = string.Empty;
 
-            foreach (var itemDescriptor in _markdownFileList)
+            foreach (var itemDescriptor in markdownFileList)
             {
                 if (itemDescriptor.Path.Equals(filename, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -320,16 +291,16 @@ namespace MoonspaceLabs.Shared.BusinessLogic
         {
             Logger.LogMessage($"Saving metadata file: '{filename}'");
 
-            var json = JsonConvert.SerializeObject(_metadata, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
 
-            _vstsHelper.SaveTextFile(_vstsAuthentication, _project, _repoName, _branch, filename, json, "Updated by Markdown to WordPress. ***NO_CI***", _metadataFileCreated);
+            vstsHelper.SaveTextFile(vstsAuthentication, project, repoName, branch, filename, json, "Updated by Markdown to WordPress. ***NO_CI***", metadataFileCreated);
         }
 
         public void LoadMarkdownFileList()
         {
             Logger.LogMessage("Loading list of markdown files...");
 
-            _markdownFileList = _vstsHelper.GetFileList(_vstsAuthentication, _project, _repoName, _branch, Path.GetDirectoryName(_metadataFilename), ".md", _processSubfolders);
+            markdownFileList = vstsHelper.GetFileList(vstsAuthentication, project, repoName, branch, Path.GetDirectoryName(metadataFilename), ".md", processSubfolders);
         }
 
         public void PublishMarkdownFiles()
@@ -340,13 +311,13 @@ namespace MoonspaceLabs.Shared.BusinessLogic
             LoadMarkdownFileList();
             ClearMetadataReconcileFlag(); // So we can track "orphaned" entries (i.e. a .md file has been deleted)
 
-            foreach (var markdownFile in _markdownFileList)
+            foreach (var markdownFile in markdownFileList)
             {
                 // Check Commit ID to see if it's different from what was stored. If not, then nothing has
                 // changed so no need to publish (again)
                 var documentMetadata = GetDocumentMetadata(markdownFile.Path);
                 var commitId = GetMarkdownFileCommitId(markdownFile.Path);
-                var markdownFileSourceUrl = $"{_vstsAuthentication.AccountUrl}/{_project}/_git/{_repoName}?path={markdownFile.Path}&version=GB{_branch}&editMode=true";
+                var markdownFileSourceUrl = $"{vstsAuthentication.AccountUrl}/{project}/_git/{repoName}?path={markdownFile.Path}&version=GB{branch}&editMode=true";
 
                 if (documentMetadata == null)
                 {
@@ -355,7 +326,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                     // There is no metedata defined for the markdown file being processed so
                     // let's create a default entry (that will be published as a Draft)
                     documentMetadata = new DocumentMetadata(markdownFile.Path);
-                    _metadata.Add(documentMetadata);
+                    metadata.Add(documentMetadata);
                 }
 
                 // Track as having a matching .md file
@@ -371,8 +342,8 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                     var filenameHelper = new FilenameHelper();
 
                     // The Commit IDs are different so the file is either new or it has been updated so let's publish!
-                    var fileContents = _vstsHelper.GetFileContents(_vstsAuthentication, _project, _repoName, _branch, markdownFile.Path);
-                    var commitInfo = _vstsHelper.GetCommitInfo(_vstsAuthentication, _project, _repoName, _branch, markdownFile.CommitId);
+                    var fileContents = vstsHelper.GetFileContents(vstsAuthentication, project, repoName, branch, markdownFile.Path);
+                    var commitInfo = vstsHelper.GetCommitInfo(vstsAuthentication, project, repoName, branch, markdownFile.CommitId);
 
                     if (commitInfo != null)
                     {
@@ -392,9 +363,9 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                     fileContents = ConvertMarkdownToHtml(fileContents);
 
                     // Add an "Edit this page" link if it is requested
-                    if (_addEditLink)
+                    if (addEditLink)
                     {
-                        fileContents += $"<br/><br/><a style=\"{_editLinkStyle}\" href=\"{markdownFileSourceUrl}\">{_editLinkText}</a>";
+                        fileContents += $"<br/><br/><a style=\"{editLinkStyle}\" href=\"{markdownFileSourceUrl}\">{editLinkText}</a>";
                     }
 
                     // Convert image links to embedded images
@@ -403,7 +374,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                     // Set the post title because it's possible the file has been renamed
                     documentMetadata.PostTitle = Path.GetFileNameWithoutExtension(filenameHelper.GetFilenameWithoutId(markdownFile.Path));
 
-                    if (_useFolderNameAsCategory)
+                    if (useFolderNameAsCategory)
                     {
                         var folderPath = Path.GetDirectoryName(documentMetadata.DocumentFilename);
 
@@ -421,7 +392,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                         }
                     }
 
-                    if (_useFolderNameAsTag)
+                    if (useFolderNameAsTag)
                     {
                         var folderPath = Path.GetDirectoryName(documentMetadata.DocumentFilename);
 
@@ -440,7 +411,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                     }
 
                     // Create the actual post/page
-                    var postStatus = _wpHelper.CreatePost(
+                    var postStatus = wpHelper.CreatePost(
                         documentMetadata.PostTitle,
                         fileContents,
                         documentMetadata.DocumentId,
@@ -448,10 +419,10 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                         documentMetadata.Categories,
                         documentMetadata.Tags,
                         !documentMetadata.IsPublic,
-                        _publishNewPostsAsDraft,
+                        publishNewPostsAsDraft,
                         documentMetadata.AuthorName,
                         documentMetadata.AuthorEmail,
-                        _publishAsCommitter);
+                        publishAsCommitter);
 
                     documentMetadata.DocumentId = postStatus.Id;
                     documentMetadata.IsPublic = !postStatus.IsDraft; // Track draft/public
@@ -459,10 +430,10 @@ namespace MoonspaceLabs.Shared.BusinessLogic
 
                     publishOccurred = true;
 
-                    if (_trackPostIdInFilename)
+                    if (trackPostIdInFilename)
                     {
                         documentMetadata.DocumentFilename =
-                            UpdateFilenameWithPostID(markdownFile.Path, documentMetadata.DocumentId);
+                            UpdateFilenameWithPostId(markdownFile.Path, documentMetadata.DocumentId);
                     }
                 }
                 else
@@ -473,14 +444,14 @@ namespace MoonspaceLabs.Shared.BusinessLogic
             }
 
             // No point saving anything if nothing was changed/published
-            if (publishOccurred || !_metadata.TrueForAll(x => x.IsReconciled))
+            if (publishOccurred || !metadata.TrueForAll(x => x.IsReconciled))
             {
                 RemoveOrphanedMetadataEntries();
-                SaveMetadata(_metadataFilename);
+                SaveMetadata(metadataFilename);
             }
         }
 
-        private string UpdateFilenameWithPostID(string documentFilename, int documentId)
+        private string UpdateFilenameWithPostId(string documentFilename, int documentId)
         {
             string newFilename = null;
             var filenameHelper = new FilenameHelper();
@@ -508,7 +479,7 @@ namespace MoonspaceLabs.Shared.BusinessLogic
                 return documentFilename;
             }
 
-            _vstsHelper.RenameFile(_vstsAuthentication, _project, _repoName, _branch, documentFilename, newFilename, "Renaming file to include Post ID. ***NO_CI***");
+            vstsHelper.RenameFile(vstsAuthentication, project, repoName, branch, documentFilename, newFilename, "Renaming file to include Post ID. ***NO_CI***");
 
             return newFilename;
         }

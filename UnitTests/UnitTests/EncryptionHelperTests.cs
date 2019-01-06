@@ -12,11 +12,11 @@ namespace UnitTests.UnitTests
             var plainText = "Secrets, secrets and more secrets!";
             var sharedSecret = "Shhh!!! Don't tell!!!";
 
-            var cipherText = EncryptionHelper.EncryptStringAES(plainText, sharedSecret);
+            var cipherText = EncryptionHelper.EncryptStringAes(plainText, sharedSecret);
 
             Assert.AreNotEqual(plainText, cipherText);
 
-            var decryptedText = EncryptionHelper.DecryptStringAES(cipherText, sharedSecret);
+            var decryptedText = EncryptionHelper.DecryptStringAes(cipherText, sharedSecret);
 
             Assert.AreEqual(plainText, decryptedText);
         }

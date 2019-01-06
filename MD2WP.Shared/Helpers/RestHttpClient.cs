@@ -28,7 +28,7 @@ namespace MoonspaceLabs.Shared.Helpers
                     // will throw an exception if not successful
                     response.EnsureSuccessStatusCode();
 
-                    string responseBody = await response.Content.ReadAsStringAsync();
+                    var responseBody = await response.Content.ReadAsStringAsync();
 
                     if (!response.IsSuccessStatusCode)
                         throw new Exception(responseBody);
@@ -77,9 +77,10 @@ namespace MoonspaceLabs.Shared.Helpers
                 {
                     // will throw an exception if not successful
                     response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
 
+                    var responseBody = await response.Content.ReadAsStringAsync();
                     var resultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseBody);
+
                     return resultObject;
                 }
             }
@@ -128,7 +129,7 @@ namespace MoonspaceLabs.Shared.Helpers
 
                 using (var response = client.PostAsJsonAsync<T>(client.BaseAddress, model))
                 {
-                    string responseBody = await response.Result.Content.ReadAsStringAsync();
+                    var responseBody = await response.Result.Content.ReadAsStringAsync();
 
                     return JsonConvert.DeserializeObject<T>(responseBody);
                 }
@@ -208,16 +209,12 @@ namespace MoonspaceLabs.Shared.Helpers
 
         private string GetBasicAuthenticationHeaderValue(AuthenticationBase authentication)
         {
-            var basicAuthentication = authentication as BasicAuthentication;
             var headerValue = string.Empty;
 
-            if (basicAuthentication != null)
+            if (authentication is BasicAuthentication basicAuthentication)
             {
-                headerValue = string.Format("Basic {0}",
-                            Convert.ToBase64String(
-                                UTF8Encoding.UTF8.GetBytes(
-                                    string.Format("{0}:{1}", basicAuthentication.UserName, basicAuthentication.Password))));
-
+                headerValue =
+                    $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{basicAuthentication.UserName}:{basicAuthentication.Password}"))}";
             }
 
             return headerValue;
@@ -225,9 +222,7 @@ namespace MoonspaceLabs.Shared.Helpers
 
         private AuthenticationHeaderValue GetAuthenticationHeaderValue(AuthenticationBase authentication)
         {
-            var basicAuthentication = authentication as BasicAuthentication;
-
-            if (basicAuthentication != null)
+            if (authentication is BasicAuthentication basicAuthentication)
             {
                 return new AuthenticationHeaderValue("Basic",
                             Convert.ToBase64String(
@@ -236,9 +231,7 @@ namespace MoonspaceLabs.Shared.Helpers
 
             }
 
-            var oauthAuthorization = authentication as OAuthAuthorization;
-
-            if (oauthAuthorization != null)
+            if (authentication is OAuthAuthorization oauthAuthorization)
             {
                 return new AuthenticationHeaderValue("Bearer", oauthAuthorization.accessToken);
             }
